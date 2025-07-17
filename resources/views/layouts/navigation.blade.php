@@ -1,100 +1,248 @@
-<nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                    </a>
-                </div>
+<nav x-data="{ open: false }">
+    <style>
+        /* Sliding text strip above navbar */
+        .ml-banner {
+            width: 100%;
+            background: linear-gradient(90deg, #142850, #0a1b3b);
+            overflow: hidden;
+            position: relative;
+            height: 40px;
+            border-bottom: 2px solid #ffd700;
+        }
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                </div>
-            </div>
+        .ml-banner-text {
+            white-space: nowrap;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #ffd700;
+            text-shadow: 0 0 10px #00bfff;
+            animation: scrollLeft 12s linear infinite;
+            padding-left: 100%;
+        }
 
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
+        @keyframes scrollLeft {
+            0% {
+                transform: translateX(0%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
 
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
+        /* Navbar styles from previous ML design */
+        nav {
+            background: linear-gradient(90deg, #0a1b3b, #142850);
+            position: relative;
+            overflow: hidden;
+        }
 
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
+        nav::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100px;
+            width: 80px;
+            height: 80px;
+            background: url('https://upload.wikimedia.org/wikipedia/en/8/8f/Mobile_Legends_Bang_Bang_logo.png') no-repeat center;
+            background-size: contain;
+            opacity: 0.1;
+            animation: sword-move 12s linear infinite;
+            z-index: 1;
+        }
 
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
+        @keyframes sword-move {
+            0% { left: -100px; top: 10px; }
+            50% { left: 100%; top: 30px; }
+            100% { left: -100px; top: 10px; }
+        }
 
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
-            </div>
+        .nav-container {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffd700;
+        }
 
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-logo svg {
+            height: 40px;
+            fill: #ffd700;
+            filter: drop-shadow(0 0 5px #00bfff);
+        }
+
+        .nav-link {
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #ffd700, #00bfff, #ffd700);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover::before {
+            transform: scaleX(1);
+        }
+
+        .nav-link:hover {
+            color: #00bfff;
+            text-shadow: 0 0 10px #00bfff;
+        }
+
+        .nav-user-name {
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 10px #00bfff;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #ffd700;
+            font-size: 1.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-left > .nav-link,
+            .nav-right {
+                display: none;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .mobile-menu {
+                display: block;
+                background: rgba(10, 27, 59, 0.95);
+                padding: 1rem 2rem;
+                animation: fadeIn 0.3s ease-in-out;
+            }
+        }
+
+        .mobile-menu a {
+            display: block;
+            color: #ffd700;
+            margin-bottom: 1rem;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .mobile-menu a:hover {
+            color: #00bfff;
+            text-shadow: 0 0 8px #00bfff;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+
+    @php
+        $unreadCount = Auth::user()->unreadNotifications->count();
+    @endphp
+
+    <!-- Sliding Text Banner -->
+    <div class="ml-banner">
+        <div class="ml-banner-text">
+            IT KA AG MO ANTA &nbsp; • &nbsp; IT KA AG MO ANTA &nbsp; • &nbsp; IT KA AG MO ANTA
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+    <!-- Top Navigation -->
+    <div class="nav-container">
+        <!-- Left Side -->
+        <div class="nav-left">
+            <a href="{{ route('dashboard') }}" class="nav-logo">
+                <x-application-logo />
+            </a>
+
+            <a href="{{ route('dashboard') }}" class="nav-link">
                 {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+            </a>
         </div>
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-            </div>
+        <!-- Right Side -->
+        <div class="nav-right">
+            <span class="nav-user-name">👤 {{ Auth::user()->name }}</span>
 
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
+            <a href="{{ route('notifications') }}" class="nav-link relative">
+                🔔 Notifications
+                @if ($unreadCount > 0)
+                    <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full">
+                        {{ $unreadCount }}
+                    </span>
+                @endif
+            </a>
 
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
-            </div>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <a href="{{ route('logout') }}"
+                   class="nav-link"
+                   onclick="event.preventDefault(); this.closest('form').submit();">
+                    {{ __('Log Out') }}
+                </a>
+            </form>
         </div>
+
+        <!-- Hamburger Icon -->
+        <button @click="open = !open" class="hamburger">
+            ☰
+        </button>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <div x-show="open" class="mobile-menu">
+        <span class="nav-user-name">👤 {{ Auth::user()->name }}</span>
+
+        <a href="{{ route('dashboard') }}" class="nav-link">Dashboard</a>
+
+        <a href="{{ route('notifications') }}" class="nav-link relative">
+            🔔 Notifications
+            @if ($unreadCount > 0)
+                <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full">
+                    {{ $unreadCount }}
+                </span>
+            @endif
+        </a>
+
+        <a href="{{ route('profile.edit') }}" class="nav-link">Profile</a>
+
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <a href="{{ route('logout') }}"
+               class="nav-link"
+               onclick="event.preventDefault(); this.closest('form').submit();">
+                {{ __('Log Out') }}
+            </a>
+        </form>
     </div>
 </nav>
